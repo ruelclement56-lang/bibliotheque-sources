@@ -592,26 +592,6 @@
       </div>
     </div>
 
-    <!-- setupPanel caché par défaut, affiché uniquement si aucun mot de passe -->
-    <div id="setupPanel" style="display:none;">
-      <div class="login-form">
-        <div class="login-group">
-          <label class="login-label">Email autorisé</label>
-          <input type="email" class="login-input" value="ruelclement56@gmail.com" disabled style="opacity:.6; cursor:not-allowed;">
-        </div>
-        <div class="login-group">
-          <label class="login-label" for="setupPassword">Créer un mot de passe</label>
-          <input type="password" id="setupPassword" class="login-input" placeholder="Minimum 8 caractères" autocomplete="new-password">
-        </div>
-        <div class="login-group">
-          <label class="login-label" for="setupPassword2">Confirmer le mot de passe</label>
-          <input type="password" id="setupPassword2" class="login-input" placeholder="Répète ton mot de passe" autocomplete="new-password">
-        </div>
-        <div class="login-error" id="setupError"></div>
-        <button class="login-btn" onclick="submitSetup()">Créer mon accès</button>
-      </div>
-      <p class="login-setup-tag">Premier accès — configuration unique</p>
-    </div>
 
   </div>
 </div>
@@ -882,10 +862,10 @@
   /* ================================================
      AUTHENTIFICATION
   ================================================ */
-  const ALLOWED_EMAIL = 'ruelclement56@gmail.com';
-  const AUTH_KEY      = 'admin_auth_expiry';
-  const PWD_KEY       = 'admin_pwd_hash';
-  const SESSION_HOURS = 24;
+  const ALLOWED_EMAIL  = 'ruelclement56@gmail.com';
+  const HARDCODED_HASH = '69c47200b73d6bb733ddae840e0166f4f8a8caf87d8b61ad51566364ae5f9ed6';
+  const AUTH_KEY       = 'admin_auth_expiry';
+  const SESSION_HOURS  = 24;
 
   async function sha256(str) {
     const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -905,15 +885,12 @@
     localStorage.setItem(AUTH_KEY, Date.now() + SESSION_HOURS * 3600 * 1000);
   }
 
-  /* Affiche login ou setup selon l'état */
   function showLoginScreen() {
-    const hasPwd = !!localStorage.getItem(PWD_KEY);
-    document.getElementById('loginScreen').style.display  = '';
-    document.getElementById('adminLayout').style.display  = 'none';
-    document.getElementById('loginPanel').style.display   = hasPwd ? '' : 'none';
-    document.getElementById('setupPanel').style.display   = hasPwd ? 'none' : '';
-    document.getElementById('loginTitle').textContent     = hasPwd ? 'Accès Admin' : 'Créer mon accès';
-    document.getElementById('loginSubtitle').textContent  = hasPwd ? 'Bibliothèque de sources' : 'Premier accès — définissez votre mot de passe';
+    document.getElementById('loginScreen').style.display = '';
+    document.getElementById('adminLayout').style.display = 'none';
+    document.getElementById('loginEmail').value          = '';
+    document.getElementById('loginPassword').value       = '';
+    document.getElementById('loginError').classList.remove('show');
   }
 
   function showAdmin() {
@@ -927,31 +904,11 @@
     const errEl = document.getElementById('loginError');
     errEl.classList.remove('show');
 
-    if (email !== ALLOWED_EMAIL) { errEl.classList.add('show'); return; }
-
     const hash = await sha256(pwd);
-    if (hash !== localStorage.getItem(PWD_KEY)) { errEl.classList.add('show'); return; }
-
-    setSession();
-    await bootAdmin();
-  }
-
-  async function submitSetup() {
-    const pwd1  = document.getElementById('setupPassword').value;
-    const pwd2  = document.getElementById('setupPassword2').value;
-    const errEl = document.getElementById('setupError');
-    errEl.classList.remove('show');
-
-    if (pwd1.length < 8) {
-      errEl.textContent = 'Le mot de passe doit faire au moins 8 caractères.';
-      errEl.classList.add('show'); return;
-    }
-    if (pwd1 !== pwd2) {
-      errEl.textContent = 'Les mots de passe ne correspondent pas.';
+    if (email !== ALLOWED_EMAIL || hash !== HARDCODED_HASH) {
       errEl.classList.add('show'); return;
     }
 
-    localStorage.setItem(PWD_KEY, await sha256(pwd1));
     setSession();
     await bootAdmin();
   }
@@ -965,16 +922,11 @@
 
   function logout() {
     localStorage.removeItem(AUTH_KEY);
-    document.getElementById('loginEmail').value    = '';
-    document.getElementById('loginPassword').value = '';
-    showLoginScreen(); // relit PWD_KEY → affiche login (jamais setup)
+    showLoginScreen();
   }
 
-  /* Soumettre avec Entrée */
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    if (document.getElementById('loginPanel').style.display !== 'none') submitLogin();
-    else if (document.getElementById('setupPanel').style.display !== 'none') submitSetup();
+    if (e.key === 'Enter') submitLogin();
   });
 
   /* ================================================
@@ -1074,24 +1026,10 @@
      INIT
   ================================================ */
   async function init() {
-    const hasPwd = !!localStorage.getItem(PWD_KEY);
-
-    /* Pas de mot de passe → premier accès, affiche setup */
-    if (!hasPwd) {
-      document.getElementById('loginPanel').style.display  = 'none';
-      document.getElementById('setupPanel').style.display  = '';
-      document.getElementById('loginTitle').textContent    = 'Créer mon accès';
-      document.getElementById('loginSubtitle').textContent = 'Premier accès — définissez votre mot de passe';
-      return;
-    }
-
-    /* Mot de passe existe + session valide → admin direct */
     if (isAuthenticated()) {
       await bootAdmin();
-      return;
     }
-
-    /* Mot de passe existe, session expirée → login (déjà affiché par défaut) */
+    /* sinon loginScreen déjà visible par défaut dans le HTML */
   }
 
   function updateSidebarCount() {
