@@ -904,18 +904,20 @@
     localStorage.setItem(AUTH_KEY, Date.now() + SESSION_HOURS * 3600 * 1000);
   }
 
+  /* Affiche login ou setup selon l'état */
+  function showLoginScreen() {
+    const hasPwd = !!localStorage.getItem(PWD_KEY);
+    document.getElementById('loginScreen').style.display  = '';
+    document.getElementById('adminLayout').style.display  = 'none';
+    document.getElementById('loginPanel').style.display   = hasPwd ? '' : 'none';
+    document.getElementById('setupPanel').style.display   = hasPwd ? 'none' : '';
+    document.getElementById('loginTitle').textContent     = hasPwd ? 'Accès Admin' : 'Créer mon accès';
+    document.getElementById('loginSubtitle').textContent  = hasPwd ? 'Bibliothèque de sources' : 'Premier accès — définissez votre mot de passe';
+  }
+
   function showAdmin() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').style.display = '';
-  }
-
-  function showLoginScreen(setup = false) {
-    document.getElementById('loginScreen').style.display  = '';
-    document.getElementById('adminLayout').style.display  = 'none';
-    document.getElementById('loginPanel').style.display   = setup ? 'none' : '';
-    document.getElementById('setupPanel').style.display   = setup ? '' : 'none';
-    document.getElementById('loginTitle').textContent     = setup ? 'Créer mon accès' : 'Accès Admin';
-    document.getElementById('loginSubtitle').textContent  = setup ? 'Premier accès — définissez votre mot de passe' : 'Bibliothèque de sources';
   }
 
   async function submitLogin() {
@@ -926,9 +928,8 @@
 
     if (email !== ALLOWED_EMAIL) { errEl.classList.add('show'); return; }
 
-    const hash   = await sha256(pwd);
-    const stored = localStorage.getItem(PWD_KEY);
-    if (hash !== stored) { errEl.classList.add('show'); return; }
+    const hash = await sha256(pwd);
+    if (hash !== localStorage.getItem(PWD_KEY)) { errEl.classList.add('show'); return; }
 
     setSession();
     await bootAdmin();
@@ -954,7 +955,6 @@
     await bootAdmin();
   }
 
-  /* Lance l'admin après authentification */
   async function bootAdmin() {
     showAdmin();
     videos = await loadData();
@@ -964,18 +964,16 @@
 
   function logout() {
     localStorage.removeItem(AUTH_KEY);
-    showLoginScreen(false);
     document.getElementById('loginEmail').value    = '';
     document.getElementById('loginPassword').value = '';
+    showLoginScreen(); // relit PWD_KEY → affiche login (jamais setup)
   }
 
   /* Soumettre avec Entrée */
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
-    const loginPanel = document.getElementById('loginPanel');
-    const setupPanel = document.getElementById('setupPanel');
-    if (loginPanel.style.display !== 'none') submitLogin();
-    else if (setupPanel.style.display !== 'none') submitSetup();
+    if (document.getElementById('loginPanel').style.display !== 'none') submitLogin();
+    else if (document.getElementById('setupPanel').style.display !== 'none') submitSetup();
   });
 
   /* ================================================
@@ -1075,11 +1073,9 @@
      INIT
   ================================================ */
   async function init() {
-    if (!localStorage.getItem(PWD_KEY)) {
-      showLoginScreen(true);  return;
-    }
     if (!isAuthenticated()) {
-      showLoginScreen(false); return;
+      showLoginScreen(); // lit PWD_KEY pour décider login vs setup
+      return;
     }
     await bootAdmin();
   }
