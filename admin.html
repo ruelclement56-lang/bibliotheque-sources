@@ -452,6 +452,74 @@
     .toast.error   { background: #991B1B; }
 
     /* ================================================
+       LOGIN SCREEN
+    ================================================ */
+    .login-screen {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-xl); padding: 36px 40px;
+      width: 100%; max-width: 400px;
+      box-shadow: var(--shadow-lg);
+    }
+    .login-brand {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; margin-bottom: 32px; text-align: center;
+    }
+    .login-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), #7C3AED);
+      border-radius: var(--r-md);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(37,99,235,.3);
+    }
+    .login-icon svg { width: 24px; height: 24px; color: #fff; }
+    .login-title { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+    .login-subtitle { font-size: 13.5px; color: var(--text-3); }
+
+    .login-form { display: flex; flex-direction: column; gap: 14px; }
+    .login-group { display: flex; flex-direction: column; gap: 5px; }
+    .login-label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+    .login-input {
+      height: 42px; padding: 0 13px;
+      font-family: inherit; font-size: 14px; color: var(--text-1);
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-md); outline: none; width: 100%;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .login-input:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .login-btn {
+      height: 44px; background: var(--accent); color: #fff;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      border: none; border-radius: var(--r-md); cursor: pointer;
+      margin-top: 4px;
+      transition: background var(--t), transform 100ms;
+      box-shadow: 0 2px 8px rgba(37,99,235,.35);
+    }
+    .login-btn:hover  { background: var(--accent-h); }
+    .login-btn:active { transform: scale(.98); }
+
+    .login-error {
+      font-size: 12.5px; color: var(--danger);
+      background: var(--danger-s); border: 1px solid #FCA5A5;
+      border-radius: var(--r-sm); padding: 8px 12px;
+      display: none;
+    }
+    .login-error.show { display: block; }
+
+    .login-setup-tag {
+      text-align: center; font-size: 12px; color: var(--text-4);
+      margin-top: 18px; padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ================================================
        SERVER STATUS BADGE
     ================================================ */
     .server-status {
@@ -486,7 +554,68 @@
 </head>
 
 <body>
-<div class="layout">
+
+<!-- ============================================
+     LOGIN SCREEN
+============================================ -->
+<div class="login-screen" id="loginScreen" style="display:none;">
+  <div class="login-card">
+
+    <div class="login-brand">
+      <div class="login-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="login-title" id="loginTitle">Accès Admin</div>
+        <div class="login-subtitle" id="loginSubtitle">Bibliothèque de sources</div>
+      </div>
+    </div>
+
+    <!-- Panel : connexion normale -->
+    <div id="loginPanel">
+      <div class="login-form">
+        <div class="login-group">
+          <label class="login-label" for="loginEmail">Adresse email</label>
+          <input type="email" id="loginEmail" class="login-input" placeholder="votre@email.com" autocomplete="email">
+        </div>
+        <div class="login-group">
+          <label class="login-label" for="loginPassword">Mot de passe</label>
+          <input type="password" id="loginPassword" class="login-input" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div class="login-error" id="loginError">Email ou mot de passe incorrect.</div>
+        <button class="login-btn" onclick="submitLogin()">Se connecter</button>
+      </div>
+    </div>
+
+    <!-- Panel : création du mot de passe (premier accès) -->
+    <div id="setupPanel" style="display:none;">
+      <div class="login-form">
+        <div class="login-group">
+          <label class="login-label">Email autorisé</label>
+          <input type="email" class="login-input" value="ruelclement56@gmail.com" disabled style="opacity:.6; cursor:not-allowed;">
+        </div>
+        <div class="login-group">
+          <label class="login-label" for="setupPassword">Créer un mot de passe</label>
+          <input type="password" id="setupPassword" class="login-input" placeholder="Minimum 8 caractères" autocomplete="new-password">
+        </div>
+        <div class="login-group">
+          <label class="login-label" for="setupPassword2">Confirmer le mot de passe</label>
+          <input type="password" id="setupPassword2" class="login-input" placeholder="Répète ton mot de passe" autocomplete="new-password">
+        </div>
+        <div class="login-error" id="setupError"></div>
+        <button class="login-btn" onclick="submitSetup()">Créer mon accès</button>
+      </div>
+      <p class="login-setup-tag">Premier accès — configuration unique</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="layout" id="adminLayout" style="display:none;">
 
   <!-- ============================================
        SIDEBAR
@@ -542,6 +671,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         Aperçu public
       </a>
+      <button class="nav-link danger" onclick="logout()" style="width:100%; margin-top:4px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Se déconnecter
+      </button>
     </div>
   </aside>
 
@@ -746,6 +879,106 @@
 
 <script>
   /* ================================================
+     AUTHENTIFICATION
+  ================================================ */
+  const ALLOWED_EMAIL = 'ruelclement56@gmail.com';
+  const AUTH_KEY      = 'admin_auth_expiry';
+  const PWD_KEY       = 'admin_pwd_hash';
+  const SESSION_HOURS = 24;
+
+  async function sha256(str) {
+    const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function isAuthenticated() {
+    const exp = localStorage.getItem(AUTH_KEY);
+    if (!exp || Date.now() > parseInt(exp)) {
+      localStorage.removeItem(AUTH_KEY);
+      return false;
+    }
+    return true;
+  }
+
+  function setSession() {
+    localStorage.setItem(AUTH_KEY, Date.now() + SESSION_HOURS * 3600 * 1000);
+  }
+
+  function showAdmin() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminLayout').style.display = '';
+  }
+
+  function showLoginScreen(setup = false) {
+    document.getElementById('loginScreen').style.display  = '';
+    document.getElementById('adminLayout').style.display  = 'none';
+    document.getElementById('loginPanel').style.display   = setup ? 'none' : '';
+    document.getElementById('setupPanel').style.display   = setup ? '' : 'none';
+    document.getElementById('loginTitle').textContent     = setup ? 'Créer mon accès' : 'Accès Admin';
+    document.getElementById('loginSubtitle').textContent  = setup ? 'Premier accès — définissez votre mot de passe' : 'Bibliothèque de sources';
+  }
+
+  async function submitLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pwd   = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    errEl.classList.remove('show');
+
+    if (email !== ALLOWED_EMAIL) { errEl.classList.add('show'); return; }
+
+    const hash   = await sha256(pwd);
+    const stored = localStorage.getItem(PWD_KEY);
+    if (hash !== stored) { errEl.classList.add('show'); return; }
+
+    setSession();
+    await bootAdmin();
+  }
+
+  async function submitSetup() {
+    const pwd1  = document.getElementById('setupPassword').value;
+    const pwd2  = document.getElementById('setupPassword2').value;
+    const errEl = document.getElementById('setupError');
+    errEl.classList.remove('show');
+
+    if (pwd1.length < 8) {
+      errEl.textContent = 'Le mot de passe doit faire au moins 8 caractères.';
+      errEl.classList.add('show'); return;
+    }
+    if (pwd1 !== pwd2) {
+      errEl.textContent = 'Les mots de passe ne correspondent pas.';
+      errEl.classList.add('show'); return;
+    }
+
+    localStorage.setItem(PWD_KEY, await sha256(pwd1));
+    setSession();
+    await bootAdmin();
+  }
+
+  /* Lance l'admin après authentification */
+  async function bootAdmin() {
+    showAdmin();
+    videos = await loadData();
+    updateSidebarCount();
+    renderList();
+  }
+
+  function logout() {
+    localStorage.removeItem(AUTH_KEY);
+    showLoginScreen(false);
+    document.getElementById('loginEmail').value    = '';
+    document.getElementById('loginPassword').value = '';
+  }
+
+  /* Soumettre avec Entrée */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const loginPanel = document.getElementById('loginPanel');
+    const setupPanel = document.getElementById('setupPanel');
+    if (loginPanel.style.display !== 'none') submitLogin();
+    else if (setupPanel.style.display !== 'none') submitSetup();
+  });
+
+  /* ================================================
      DONNÉES INITIALES (même contenu que index.html)
      Utilisées uniquement si localStorage est vide.
   ================================================ */
@@ -842,9 +1075,13 @@
      INIT
   ================================================ */
   async function init() {
-    videos = await loadData();
-    updateSidebarCount();
-    renderList();
+    if (!localStorage.getItem(PWD_KEY)) {
+      showLoginScreen(true);  return;
+    }
+    if (!isAuthenticated()) {
+      showLoginScreen(false); return;
+    }
+    await bootAdmin();
   }
 
   function updateSidebarCount() {
