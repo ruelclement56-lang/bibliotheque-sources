@@ -558,7 +558,8 @@
 <!-- ============================================
      LOGIN SCREEN
 ============================================ -->
-<div class="login-screen" id="loginScreen" style="display:none;">
+<!-- loginScreen visible par défaut. JS cache si déjà authentifié. -->
+<div class="login-screen" id="loginScreen">
   <div class="login-card">
 
     <div class="login-brand">
@@ -575,7 +576,7 @@
       </div>
     </div>
 
-    <!-- Panel : connexion normale -->
+    <!-- loginPanel affiché par défaut (cas le plus courant) -->
     <div id="loginPanel">
       <div class="login-form">
         <div class="login-group">
@@ -591,7 +592,7 @@
       </div>
     </div>
 
-    <!-- Panel : création du mot de passe (premier accès) -->
+    <!-- setupPanel caché par défaut, affiché uniquement si aucun mot de passe -->
     <div id="setupPanel" style="display:none;">
       <div class="login-form">
         <div class="login-group">
@@ -1073,11 +1074,24 @@
      INIT
   ================================================ */
   async function init() {
-    if (!isAuthenticated()) {
-      showLoginScreen(); // lit PWD_KEY pour décider login vs setup
+    const hasPwd = !!localStorage.getItem(PWD_KEY);
+
+    /* Pas de mot de passe → premier accès, affiche setup */
+    if (!hasPwd) {
+      document.getElementById('loginPanel').style.display  = 'none';
+      document.getElementById('setupPanel').style.display  = '';
+      document.getElementById('loginTitle').textContent    = 'Créer mon accès';
+      document.getElementById('loginSubtitle').textContent = 'Premier accès — définissez votre mot de passe';
       return;
     }
-    await bootAdmin();
+
+    /* Mot de passe existe + session valide → admin direct */
+    if (isAuthenticated()) {
+      await bootAdmin();
+      return;
+    }
+
+    /* Mot de passe existe, session expirée → login (déjà affiché par défaut) */
   }
 
   function updateSidebarCount() {
