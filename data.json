@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Les 5 biais cognitifs",
+    "category": "Psychologie",
+    "image": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&auto=format&fit=crop&q=80",
+    "shortDescription": "Les biais cognitifs ne permettent pas littéralement de « vendre à n'importe qui ». Ils permettent surtout de mieux comprendre comment les humains perçoivent, comparent, jugent et décident.",
+    "sources": [
+      {
+        "author": "Daniel Kahneman",
+        "title": "Système 1 / Système 2",
+        "type": "Étude",
+        "description": "Distinction entre pensée rapide/intuitive (Système 1) et pensée lente/logique (Système 2). Permet de comprendre pourquoi notre cerveau utilise des raccourcis mentaux dans les décisions d'achat. Prix Nobel d'économie 2002.",
+        "link": "https://www.nobelprize.org/prizes/economic-sciences/2002/kahneman/facts/"
+      },
+      {
+        "author": "Edward Thorndike",
+        "title": "Effet de halo",
+        "type": "Étude",
+        "description": "Une impression positive sur un aspect influence le jugement global. Si un produit paraît premium, on lui attribue inconsciemment d'autres qualités. Fondement de l'image de marque et du design produit.",
+        "link": "https://web.mit.edu/curhan/www/docs/Articles/biases/4_J_Applied_Psychology_25_%28Thorndike%29.pdf"
+      },
+      {
+        "author": "Amos Tversky & Daniel Kahneman",
+        "title": "Effet d'ancrage",
+        "type": "Étude",
+        "description": "Le premier chiffre exposé biaise tous les jugements suivants, même s'il est arbitraire. Explique le mécanisme des prix barrés et des offres comparatives. Publié dans Science, 1974.",
+        "link": "https://www.science.org/doi/10.1126/science.185.4157.1124"
+      },
+      {
+        "author": "Alvin Gouldner",
+        "title": "Norme de réciprocité",
+        "type": "Article",
+        "description": "Quand on reçoit quelque chose, on ressent une obligation sociale à rendre. Base du content marketing : donner de la valeur avant de vendre renforce la confiance et facilite la conversion.",
+        "link": "https://www.jstor.org/stable/2092623"
+      },
+      {
+        "author": "Henri Tajfel",
+        "title": "Appartenance sociale & biais d'endogroupe",
+        "type": "Étude",
+        "description": "Les humains favorisent leur propre groupe, même créé arbitrairement. Explique pourquoi les marques vendent une identité, un statut et un sentiment d'appartenance autant qu'un produit.",
+        "link": "https://onlinelibrary.wiley.com/doi/10.1002/ejsp.2420010202"
+      },
+      {
+        "author": "Gilovich, Medvec & Savitsky",
+        "title": "Effet projecteur",
+        "type": "Étude",
+        "description": "On surestime l'attention que les autres portent à nos actions et apparences. Explique pourquoi les messages qui touchent une insécurité personnelle créent une forte identification.",
+        "link": "https://doi.org/10.1037/0022-3514.78.2.211"
+      }
+    ]
+  }
+]

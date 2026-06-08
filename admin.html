@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Bibliothèque de sources</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #F8FAFC;
+      --surface:   #FFFFFF;
+      --border:    #E5E7EB;
+      --text-1:    #111827;
+      --text-2:    #374151;
+      --text-3:    #6B7280;
+      --text-4:    #9CA3AF;
+      --accent:    #2563EB;
+      --accent-h:  #1D4ED8;
+      --accent-s:  #EFF6FF;
+      --danger:    #EF4444;
+      --danger-s:  #FEF2F2;
+      --success:   #10B981;
+      --sidebar-w: 250px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,.14);
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-full: 9999px;
+      --t: 180ms ease-out;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; }
+    input, select, textarea { font-family: inherit; }
+    a { text-decoration: none; color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+
+    /* ================================================
+       LAYOUT
+    ================================================ */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ================================================
+       SIDEBAR
+    ================================================ */
+    .sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 20; overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 20px 20px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), #7C3AED);
+      border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-icon svg { width: 17px; height: 17px; color: #fff; }
+    .sidebar-brand-text strong { display: block; font-size: 13.5px; font-weight: 700; color: var(--text-1); }
+    .sidebar-brand-text span   { font-size: 11px; color: var(--text-4); font-weight: 500; }
+
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-4);
+      padding: 0 8px; margin-bottom: 6px; margin-top: 16px;
+    }
+    .sidebar-section-label:first-child { margin-top: 0; }
+
+    .nav-link {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; padding: 8px 10px;
+      font-size: 13.5px; font-weight: 500; color: var(--text-2);
+      border-radius: var(--r-sm); background: none;
+      transition: all var(--t); cursor: pointer; text-align: left;
+      border: none;
+    }
+    .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-4); }
+    .nav-link:hover { background: var(--bg); color: var(--text-1); }
+    .nav-link:hover svg { color: var(--text-2); }
+    .nav-link.active { background: var(--accent-s); color: var(--accent); font-weight: 600; }
+    .nav-link.active svg { color: var(--accent); }
+    .nav-link.danger:hover { background: var(--danger-s); color: var(--danger); }
+    .nav-link.danger:hover svg { color: var(--danger); }
+
+    .video-count-badge {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      padding: 1px 7px; border-radius: var(--r-full);
+      background: var(--border); color: var(--text-3);
+    }
+    .nav-link.active .video-count-badge { background: rgba(37,99,235,.15); color: var(--accent); }
+
+    .sidebar-footer {
+      padding: 14px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .preview-link {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 10px; font-size: 13px; font-weight: 500;
+      color: var(--text-3); border-radius: var(--r-sm);
+      transition: all var(--t);
+    }
+    .preview-link:hover { background: var(--bg); color: var(--text-1); }
+    .preview-link svg { width: 15px; height: 15px; }
+
+    /* ================================================
+       MAIN CONTENT
+    ================================================ */
+    .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+
+    .topbar {
+      background: rgba(248,250,252,.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text-1); }
+    .topbar-actions { display: flex; gap: 8px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      height: 36px; padding: 0 16px;
+      font-size: 13.5px; font-weight: 500; border-radius: var(--r-md);
+      transition: all var(--t); cursor: pointer; border: none;
+    }
+    .btn svg { width: 15px; height: 15px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-h); }
+    .btn-secondary { background: var(--surface); color: var(--text-2); border: 1.5px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-s); }
+    .btn-danger { background: var(--danger-s); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-ghost { background: none; color: var(--text-3); }
+    .btn-ghost:hover { background: var(--border); color: var(--text-1); }
+    .btn-sm { height: 30px; padding: 0 11px; font-size: 12.5px; border-radius: var(--r-sm); }
+    .btn-sm svg { width: 13px; height: 13px; }
+
+    .page-body { padding: 28px 32px; max-width: 900px; }
+
+    /* ================================================
+       VIDEO LIST
+    ================================================ */
+    .video-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .video-list-empty {
+      text-align: center; padding: 64px 20px;
+      background: var(--surface); border: 1.5px dashed var(--border);
+      border-radius: var(--r-lg);
+    }
+    .video-list-empty svg { width: 48px; height: 48px; color: var(--text-4); margin: 0 auto 16px; }
+    .video-list-empty h3 { font-size: 16px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+    .video-list-empty p  { font-size: 13.5px; color: var(--text-3); }
+
+    .video-item {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden;
+      display: flex; align-items: center; gap: 0;
+      transition: box-shadow var(--t), border-color var(--t);
+    }
+    .video-item:hover { box-shadow: var(--shadow-md); border-color: #C7D7FE; }
+
+    .video-item-thumb {
+      width: 100px; height: 68px; flex-shrink: 0;
+      background: #F3F4F6; overflow: hidden;
+    }
+    .video-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .video-item-body {
+      flex: 1; padding: 12px 16px; min-width: 0;
+    }
+    .video-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .video-item-title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+    .video-item-desc  { font-size: 12.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .cat-badge {
+      display: inline-flex; align-items: center;
+      height: 19px; padding: 0 8px;
+      font-size: 10px; font-weight: 600; letter-spacing: .04em;
+      border-radius: var(--r-full); border: 1px solid transparent; flex-shrink: 0;
+    }
+    .cat-Psychologie    { background: #FFFBEB; color: #92400E; border-color: #FCD34D; }
+    .cat-Marketing      { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
+    .cat-Business       { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
+    .cat-Sciences       { background: #F5F3FF; color: #5B21B6; border-color: #C4B5FD; }
+    .cat-Sport          { background: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+    .cat-Productivite   { background: #ECFEFF; color: #155E75; border-color: #67E8F9; }
+    .cat-Reseaux        { background: #FFF7ED; color: #9A3412; border-color: #FDBA74; }
+    .cat-Autre          { background: #F9FAFB; color: #374151; border-color: #D1D5DB; }
+
+    .video-item-meta { font-size: 11.5px; color: var(--text-4); font-weight: 500; }
+
+    .video-item-actions {
+      display: flex; gap: 6px; padding: 0 16px; flex-shrink: 0;
+    }
+
+    /* ================================================
+       FORM
+    ================================================ */
+    .form-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden; margin-bottom: 20px;
+    }
+    .form-section-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .form-section-title {
+      font-size: 13.5px; font-weight: 600; color: var(--text-1);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .form-section-title svg { width: 16px; height: 16px; color: var(--text-3); }
+    .form-section-body { padding: 20px; }
+
+    .form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+    .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-row:last-child { margin-bottom: 0; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 12px; font-weight: 600; color: var(--text-2);
+      letter-spacing: .02em;
+    }
+    .form-label .req { color: var(--accent); margin-left: 2px; }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 9px 12px;
+      font-size: 13.5px; color: var(--text-1);
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); outline: none;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-4); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+      background: var(--surface);
+    }
+    .form-textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+    .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 34px; }
+
+    /* Image preview */
+    .img-preview-wrap { margin-top: 8px; }
+    .img-preview {
+      width: 100%; aspect-ratio: 16/9; border-radius: var(--r-md);
+      object-fit: cover; background: var(--border); display: block;
+    }
+    .img-preview-placeholder {
+      width: 100%; aspect-ratio: 16/9; border-radius: var(--r-md);
+      background: var(--bg); border: 1.5px dashed var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; color: var(--text-4);
+    }
+    .img-preview-placeholder svg { width: 28px; height: 28px; }
+    .img-preview-placeholder span { font-size: 12px; }
+
+    /* Sources section */
+    .sources-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sources-count {
+      font-size: 12px; font-weight: 500; color: var(--text-4);
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-full); padding: 2px 10px;
+    }
+
+    .source-cards { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+
+    .source-card {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-md); overflow: hidden;
+    }
+    .source-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .source-card-num {
+      font-size: 11.5px; font-weight: 700; color: var(--text-4);
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .source-card-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+
+    .add-source-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; height: 40px; margin-top: 14px;
+      font-size: 13px; font-weight: 500; color: var(--accent);
+      background: var(--accent-s); border: 1.5px dashed rgba(37,99,235,.4);
+      border-radius: var(--r-md); cursor: pointer;
+      transition: all var(--t);
+    }
+    .add-source-btn:hover { background: rgba(37,99,235,.12); border-color: var(--accent); }
+    .add-source-btn svg { width: 15px; height: 15px; }
+
+    /* JSON import section */
+    .json-import {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden; margin-bottom: 20px;
+    }
+    .json-import-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; cursor: pointer; user-select: none;
+      transition: background var(--t);
+    }
+    .json-import-header:hover { background: var(--bg); }
+    .json-import-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13.5px; font-weight: 600; color: var(--text-1);
+    }
+    .json-import-title svg { width: 16px; height: 16px; color: var(--accent); }
+    .json-import-badge {
+      font-size: 10.5px; font-weight: 600; padding: 2px 8px;
+      background: var(--accent-s); color: var(--accent);
+      border-radius: var(--r-full); border: 1px solid #BFDBFE;
+    }
+    .json-import-chevron {
+      width: 16px; height: 16px; color: var(--text-4);
+      transition: transform var(--t);
+    }
+    .json-import.open .json-import-chevron { transform: rotate(180deg); }
+    .json-import-body {
+      padding: 0 20px 20px; display: none;
+    }
+    .json-import.open .json-import-body { display: block; }
+    .json-hint {
+      font-size: 12px; color: var(--text-3); margin-bottom: 10px; line-height: 1.6;
+    }
+    .json-hint code {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 5px; font-size: 11px;
+    }
+    .json-textarea {
+      width: 100%; min-height: 140px; padding: 12px 14px;
+      font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px;
+      color: var(--text-1); background: #1E293B; color: #E2E8F0;
+      border: 1.5px solid var(--border); border-radius: var(--r-md);
+      resize: vertical; outline: none; line-height: 1.6;
+      transition: border-color var(--t);
+    }
+    .json-textarea:focus { border-color: var(--accent); }
+    .json-textarea::placeholder { color: #64748B; }
+    .json-import-actions {
+      display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    }
+    .json-error {
+      font-size: 12px; color: var(--danger); display: none;
+      align-items: center; gap: 5px;
+    }
+    .json-error svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .json-error.show { display: flex; }
+
+    /* Form actions bar */
+    .form-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 14px 20px;
+    }
+    .form-actions-right { display: flex; gap: 8px; }
+
+    /* Validation error */
+    .form-error { font-size: 11.5px; color: var(--danger); margin-top: 4px; display: none; }
+    .has-error .form-input,
+    .has-error .form-select,
+    .has-error .form-textarea { border-color: var(--danger); }
+    .has-error .form-error { display: block; }
+
+    /* ================================================
+       EXPORT MODAL
+    ================================================ */
+    .overlay {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 250ms, visibility 250ms;
+    }
+    .overlay.open { opacity: 1; visibility: visible; }
+
+    .modal {
+      background: var(--surface); border-radius: var(--r-xl);
+      width: 100%; max-width: 640px; max-height: 86vh;
+      overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(12px) scale(.98);
+      transition: transform 250ms ease-out;
+    }
+    .overlay.open .modal { transform: none; }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 700; }
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .modal-footer {
+      display: flex; gap: 8px; justify-content: flex-end;
+      padding: 14px 20px; border-top: 1px solid var(--border);
+    }
+
+    .code-block {
+      font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px;
+      background: #1E293B; color: #E2E8F0;
+      border-radius: var(--r-md); padding: 16px;
+      overflow: auto; max-height: 340px;
+      white-space: pre; line-height: 1.65;
+    }
+    .code-block::-webkit-scrollbar { width: 6px; height: 6px; }
+    .code-block::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+    .export-note {
+      font-size: 12.5px; color: var(--text-3); line-height: 1.65;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 14px;
+    }
+
+    /* ================================================
+       TOAST
+    ================================================ */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(12px);
+      background: var(--text-1); color: #fff;
+      padding: 10px 18px; border-radius: var(--r-full);
+      font-size: 13.5px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0; pointer-events: none;
+      transition: opacity 200ms, transform 200ms;
+      z-index: 60; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast svg { width: 16px; height: 16px; }
+    .toast.success { background: #065F46; }
+    .toast.error   { background: #991B1B; }
+
+    /* ================================================
+       SERVER STATUS BADGE
+    ================================================ */
+    .server-status {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 10px; border-radius: var(--r-sm);
+      font-size: 12px; font-weight: 500;
+      border: 1.5px solid var(--border); margin-bottom: 6px;
+      transition: all var(--t);
+    }
+    .server-status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .server-status.online  { color: #065F46; border-color: #6EE7B7; background: #ECFDF5; }
+    .server-status.online  .server-status-dot { background: var(--success); box-shadow: 0 0 0 2px rgba(16,185,129,.25); }
+    .server-status.offline { color: var(--text-3); border-color: var(--border); background: var(--bg); }
+    .server-status.offline .server-status-dot { background: var(--text-4); }
+
+    /* ================================================
+       RESPONSIVE
+    ================================================ */
+    @media (max-width: 900px) {
+      .form-row.cols-2,
+      .form-row.cols-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-100%); }
+      .main { margin-left: 0; }
+      .topbar, .page-body { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="layout">
+
+  <!-- ============================================
+       SIDEBAR
+  ============================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+      <div class="sidebar-brand-text">
+        <strong>Bibliothèque</strong>
+        <span>Administration</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Contenu</div>
+
+      <button class="nav-link active" id="navList" onclick="showView('list')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Mes vidéos
+        <span class="video-count-badge" id="sidebarCount">0</span>
+      </button>
+
+      <button class="nav-link" id="navAdd" onclick="showView('form')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Nouvelle vidéo
+      </button>
+
+      <div class="sidebar-section-label">Outils</div>
+
+      <button class="nav-link" onclick="openExport()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exporter le code
+      </button>
+
+      <button class="nav-link danger" onclick="confirmReset()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.65"/></svg>
+        Réinitialiser
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="server-status offline" id="serverStatus">
+        <span class="server-status-dot"></span>
+        <span id="serverStatusText">Mode local</span>
+      </div>
+      <a class="preview-link" href="index.html" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Aperçu public
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============================================
+       MAIN
+  ============================================ -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <span class="topbar-title" id="topbarTitle">Mes vidéos</span>
+      <div class="topbar-actions" id="topbarActions">
+        <button class="btn btn-primary" onclick="showView('form')">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nouvelle vidéo
+        </button>
+      </div>
+    </div>
+
+    <!-- List view -->
+    <div id="viewList" class="page-body">
+      <div class="video-list" id="videoList"></div>
+    </div>
+
+    <!-- Form view -->
+    <div id="viewForm" class="page-body" style="display:none;">
+
+      <!-- Section : Import JSON -->
+      <div class="json-import" id="jsonImportSection">
+        <div class="json-import-header" onclick="toggleJsonImport()">
+          <div class="json-import-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+            Importer depuis un JSON
+            <span class="json-import-badge">Optionnel</span>
+          </div>
+          <svg class="json-import-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div class="json-import-body">
+          <p class="json-hint">
+            Colle un objet JSON correspondant à une vidéo. Les champs <code>title</code>, <code>category</code>,
+            <code>image</code>, <code>shortDescription</code> et <code>sources[]</code> seront remplis automatiquement.
+          </p>
+          <textarea
+            id="jsonInput"
+            class="json-textarea"
+            placeholder='{"title": "Titre de la vidéo", "category": "Psychologie", "image": "https://...", "shortDescription": "...", "sources": [{"author": "...", "title": "...", "type": "Étude", "description": "...", "link": "https://..."}]}'
+            spellcheck="false"
+          ></textarea>
+          <div class="json-import-actions">
+            <button class="btn btn-primary" onclick="applyJson()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Remplir le formulaire
+            </button>
+            <button class="btn btn-ghost" onclick="clearJsonInput()">Effacer</button>
+            <div class="json-error" id="jsonError">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span id="jsonErrorText">JSON invalide</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section : Infos générales -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Informations générales
+          </div>
+        </div>
+        <div class="form-section-body">
+
+          <div class="form-row">
+            <div class="form-group" id="fg-title">
+              <label class="form-label" for="fTitle">Titre de la vidéo <span class="req">*</span></label>
+              <input type="text" id="fTitle" class="form-input" placeholder="Ex : Les 5 biais cognitifs">
+              <span class="form-error">Ce champ est requis.</span>
+            </div>
+          </div>
+
+          <div class="form-row cols-2">
+            <div class="form-group" id="fg-category">
+              <label class="form-label" for="fCategory">Catégorie <span class="req">*</span></label>
+              <select id="fCategory" class="form-select">
+                <option value="">-- Choisir --</option>
+                <option value="Psychologie">Psychologie</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Business">Business</option>
+                <option value="Sciences">Sciences</option>
+                <option value="Sport">Sport</option>
+                <option value="Réseaux sociaux">Réseaux sociaux</option>
+                <option value="Productivité">Productivité</option>
+                <option value="Autre">Autre</option>
+              </select>
+              <span class="form-error">Ce champ est requis.</span>
+            </div>
+            <div class="form-group" id="fg-image">
+              <label class="form-label" for="fImage">URL de l'image <span class="req">*</span></label>
+              <input type="url" id="fImage" class="form-input" placeholder="https://images.unsplash.com/…" oninput="previewImage(this.value)">
+              <span class="form-error">Ce champ est requis.</span>
+            </div>
+          </div>
+
+          <!-- Image preview -->
+          <div style="margin-bottom:16px;">
+            <div id="imgPreviewPlaceholder" class="img-preview-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              <span>Aperçu de l'image</span>
+            </div>
+            <img id="imgPreview" class="img-preview" src="" alt="" style="display:none;" onerror="showPlaceholder()">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="fg-desc">
+              <label class="form-label" for="fDesc">Description courte <span class="req">*</span></label>
+              <textarea id="fDesc" class="form-textarea" rows="3" placeholder="Contexte de la vidéo, angle éditorial…"></textarea>
+              <span class="form-error">Ce champ est requis.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Section : Sources -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Sources
+          </div>
+          <span class="sources-count" id="sourcesCount">0 source</span>
+        </div>
+        <div class="form-section-body">
+          <div class="source-cards" id="sourceCards"></div>
+          <button class="add-source-btn" onclick="addSourceRow()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter une source
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="showView('list')">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Annuler
+        </button>
+        <div class="form-actions-right">
+          <button class="btn btn-primary" onclick="saveVideo()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Enregistrer
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /viewForm -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ============================================
+     EXPORT MODAL
+============================================ -->
+<div class="overlay" id="exportOverlay" onclick="closeExport(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Exporter le code</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeExport()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="export-note">
+        Copiez ce code et remplacez le tableau <strong>VIDEOS</strong> dans votre <code>index.html</code> — utile pour sauvegarder ou déployer vos modifications.
+      </p>
+      <pre class="code-block" id="exportCode"></pre>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeExport()">Fermer</button>
+      <button class="btn btn-primary" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Tout copier
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+
+<script>
+  /* ================================================
+     DONNÉES INITIALES (même contenu que index.html)
+     Utilisées uniquement si localStorage est vide.
+  ================================================ */
+  const INITIAL_VIDEOS = [
+    {
+      title: "Les 5 biais cognitifs",
+      category: "Psychologie",
+      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&auto=format&fit=crop&q=80",
+      shortDescription: "Les biais cognitifs ne permettent pas littéralement de « vendre à n'importe qui ». Ils permettent surtout de mieux comprendre comment les humains perçoivent, comparent, jugent et décident.",
+      sources: [
+        { author: "Daniel Kahneman", title: "Système 1 / Système 2", type: "Étude", description: "Distinction entre pensée rapide/intuitive (Système 1) et pensée lente/logique (Système 2). Permet de comprendre pourquoi notre cerveau utilise des raccourcis mentaux dans les décisions d'achat. Prix Nobel d'économie 2002.", link: "https://www.nobelprize.org/prizes/economic-sciences/2002/kahneman/facts/" },
+        { author: "Edward Thorndike", title: "Effet de halo", type: "Étude", description: "Une impression positive sur un aspect influence le jugement global. Si un produit paraît premium, on lui attribue inconsciemment d'autres qualités. Fondement de l'image de marque et du design produit.", link: "https://web.mit.edu/curhan/www/docs/Articles/biases/4_J_Applied_Psychology_25_%28Thorndike%29.pdf" },
+        { author: "Amos Tversky & Daniel Kahneman", title: "Effet d'ancrage", type: "Étude", description: "Le premier chiffre exposé biaise tous les jugements suivants, même s'il est arbitraire. Explique le mécanisme des prix barrés et des offres comparatives. Publié dans Science, 1974.", link: "https://www.science.org/doi/10.1126/science.185.4157.1124" },
+        { author: "Alvin Gouldner", title: "Norme de réciprocité", type: "Article", description: "Quand on reçoit quelque chose, on ressent une obligation sociale à rendre. Base du content marketing : donner de la valeur avant de vendre renforce la confiance et facilite la conversion.", link: "https://www.jstor.org/stable/2092623" },
+        { author: "Henri Tajfel", title: "Appartenance sociale & biais d'endogroupe", type: "Étude", description: "Les humains favorisent leur propre groupe, même créé arbitrairement. Explique pourquoi les marques vendent une identité, un statut et un sentiment d'appartenance autant qu'un produit.", link: "https://onlinelibrary.wiley.com/doi/10.1002/ejsp.2420010202" },
+        { author: "Gilovich, Medvec & Savitsky", title: "Effet projecteur", type: "Étude", description: "On surestime l'attention que les autres portent à nos actions et apparences. Explique pourquoi les messages qui touchent une insécurité personnelle créent une forte identification.", link: "https://doi.org/10.1037/0022-3514.78.2.211" }
+      ]
+    }
+  ];
+
+  const STORAGE_KEY = 'bib_videos';
+  const TYPES = ["Livre", "Étude", "Article", "Vidéo", "Podcast", "Rapport"];
+
+  const CAT_CLASS = {
+    "Psychologie": "cat-Psychologie", "Marketing": "cat-Marketing",
+    "Business": "cat-Business", "Sciences": "cat-Sciences",
+    "Sport": "cat-Sport", "Productivité": "cat-Productivite",
+    "Réseaux sociaux": "cat-Reseaux", "Autre": "cat-Autre"
+  };
+
+  /* ================================================
+     STATE
+  ================================================ */
+  let videos    = [];
+  let editingIdx = null;   // null = new video, number = editing index
+
+  /* ================================================
+     SERVER STATUS
+  ================================================ */
+  let serverOnline = false;
+
+  function setServerStatus(online) {
+    serverOnline = online;
+    const el   = document.getElementById('serverStatus');
+    const text = document.getElementById('serverStatusText');
+    el.className   = 'server-status ' + (online ? 'online' : 'offline');
+    text.textContent = online ? 'Serveur connecté' : 'Mode local';
+  }
+
+  /* ================================================
+     STORAGE — localStorage + data.json via server
+  ================================================ */
+  async function loadData() {
+    /* 1. Essaie data.json via le serveur */
+    try {
+      const r = await fetch('/data.json', { cache: 'no-store' });
+      if (r.ok) {
+        const data = await r.json();
+        setServerStatus(true);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); // sync local
+        return data;
+      }
+    } catch {}
+
+    /* 2. Fallback localStorage */
+    setServerStatus(false);
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+
+    /* 3. Fallback données initiales */
+    return JSON.parse(JSON.stringify(INITIAL_VIDEOS));
+  }
+
+  async function saveData() {
+    /* Toujours sauver dans localStorage */
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+
+    /* Essaie de sauver dans data.json via le serveur */
+    try {
+      const r = await fetch('/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(videos, null, 2)
+      });
+      if (r.ok) { setServerStatus(true); return; }
+    } catch {}
+
+    setServerStatus(false);
+  }
+
+  /* ================================================
+     INIT
+  ================================================ */
+  async function init() {
+    videos = await loadData();
+    updateSidebarCount();
+    renderList();
+  }
+
+  function updateSidebarCount() {
+    document.getElementById('sidebarCount').textContent = videos.length;
+  }
+
+  /* ================================================
+     VIEW SWITCHING
+  ================================================ */
+  function showView(view, idx = null) {
+    document.getElementById('viewList').style.display = (view === 'list') ? '' : 'none';
+    document.getElementById('viewForm').style.display = (view === 'form') ? '' : 'none';
+
+    document.getElementById('navList').classList.toggle('active', view === 'list');
+    document.getElementById('navAdd').classList.toggle('active', view === 'form');
+
+    if (view === 'list') {
+      document.getElementById('topbarTitle').textContent = 'Mes vidéos';
+      document.getElementById('topbarActions').innerHTML = `
+        <button class="btn btn-primary" onclick="showView('form')">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nouvelle vidéo
+        </button>`;
+      renderList();
+    }
+
+    if (view === 'form') {
+      editingIdx = idx;
+      const isEdit = idx !== null;
+      document.getElementById('topbarTitle').textContent = isEdit ? 'Modifier la vidéo' : 'Nouvelle vidéo';
+      document.getElementById('topbarActions').innerHTML = '';
+      loadForm(isEdit ? videos[idx] : null);
+    }
+  }
+
+  /* ================================================
+     RENDER LIST
+  ================================================ */
+  function renderList() {
+    const container = document.getElementById('videoList');
+    updateSidebarCount();
+
+    if (videos.length === 0) {
+      container.innerHTML = `
+        <div class="video-list-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <h3>Aucune vidéo pour l'instant</h3>
+          <p>Cliquez sur "Nouvelle vidéo" pour commencer.</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = videos.map((v, i) => `
+      <div class="video-item">
+        <div class="video-item-thumb">
+          <img src="${escHtml(v.image)}" alt="${escHtml(v.title)}" onerror="this.style.opacity='.3'">
+        </div>
+        <div class="video-item-body">
+          <div class="video-item-header">
+            <span class="cat-badge ${CAT_CLASS[v.category] || 'cat-Autre'}">${escHtml(v.category)}</span>
+            <span class="video-item-meta">${v.sources.length} source${v.sources.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="video-item-title">${escHtml(v.title)}</div>
+          <div class="video-item-desc">${escHtml(v.shortDescription)}</div>
+        </div>
+        <div class="video-item-actions">
+          <button class="btn btn-secondary btn-sm" onclick="showView('form', ${i})">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 1 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Modifier
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteVideo(${i})">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ================================================
+     JSON IMPORT
+  ================================================ */
+  function toggleJsonImport() {
+    document.getElementById('jsonImportSection').classList.toggle('open');
+  }
+
+  function applyJson() {
+    const raw     = document.getElementById('jsonInput').value.trim();
+    const errorEl = document.getElementById('jsonError');
+    const errText = document.getElementById('jsonErrorText');
+    errorEl.classList.remove('show');
+
+    if (!raw) {
+      errText.textContent = 'Colle un JSON avant de continuer.';
+      errorEl.classList.add('show'); return;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      errText.textContent = 'JSON invalide : ' + e.message;
+      errorEl.classList.add('show'); return;
+    }
+
+    if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+      errText.textContent = 'Le JSON doit être un objet {…}, pas un tableau.';
+      errorEl.classList.add('show'); return;
+    }
+
+    loadForm(parsed);
+
+    /* Ferme le panneau JSON et confirme */
+    document.getElementById('jsonImportSection').classList.remove('open');
+    document.getElementById('jsonInput').value = '';
+    toast('Formulaire rempli depuis le JSON.', 'success');
+  }
+
+  function clearJsonInput() {
+    document.getElementById('jsonInput').value = '';
+    document.getElementById('jsonError').classList.remove('show');
+  }
+
+  /* ================================================
+     FORM — Load
+  ================================================ */
+  function loadForm(video) {
+    const v = video || { title: '', category: '', image: '', shortDescription: '', sources: [] };
+
+    document.getElementById('fTitle').value    = v.title;
+    document.getElementById('fCategory').value = v.category;
+    document.getElementById('fImage').value    = v.image;
+    document.getElementById('fDesc').value     = v.shortDescription;
+
+    clearValidation();
+    previewImage(v.image);
+    renderSources(v.sources);
+  }
+
+  /* ================================================
+     IMAGE PREVIEW
+  ================================================ */
+  function previewImage(url) {
+    const img  = document.getElementById('imgPreview');
+    const ph   = document.getElementById('imgPreviewPlaceholder');
+    if (!url) { img.style.display = 'none'; ph.style.display = ''; return; }
+    img.src = url;
+    img.style.display = 'block';
+    ph.style.display  = 'none';
+  }
+  function showPlaceholder() {
+    document.getElementById('imgPreview').style.display = 'none';
+    document.getElementById('imgPreviewPlaceholder').style.display = '';
+  }
+
+  /* ================================================
+     SOURCES — Render & Manage
+  ================================================ */
+  let formSources = [];
+
+  function renderSources(sources) {
+    formSources = sources.map(s => ({ ...s }));
+    redrawSources();
+  }
+
+  function redrawSources() {
+    const container = document.getElementById('sourceCards');
+    const countEl   = document.getElementById('sourcesCount');
+    const n = formSources.length;
+    countEl.textContent = n + ' source' + (n > 1 ? 's' : '');
+
+    container.innerHTML = formSources.map((s, i) => `
+      <div class="source-card" id="sc-${i}">
+        <div class="source-card-header">
+          <span class="source-card-num">Source ${i + 1}</span>
+          <button class="btn btn-danger btn-sm" onclick="removeSourceRow(${i})">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Supprimer
+          </button>
+        </div>
+        <div class="source-card-body">
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Auteur <span class="req">*</span></label>
+              <input type="text" class="form-input" value="${escHtml(s.author || '')}"
+                placeholder="Ex : Daniel Kahneman"
+                oninput="updateSource(${i},'author',this.value)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type <span class="req">*</span></label>
+              <select class="form-select" onchange="updateSource(${i},'type',this.value)">
+                ${TYPES.map(t => `<option value="${t}" ${s.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Titre de la source <span class="req">*</span></label>
+            <input type="text" class="form-input" value="${escHtml(s.title || '')}"
+              placeholder="Ex : Système 1 / Système 2"
+              oninput="updateSource(${i},'title',this.value)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lien URL <span class="req">*</span></label>
+            <input type="url" class="form-input" value="${escHtml(s.link || '')}"
+              placeholder="https://…"
+              oninput="updateSource(${i},'link',this.value)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" rows="2"
+              placeholder="Résumé de ce que cette source apporte à ta vidéo…"
+              oninput="updateSource(${i},'description',this.value)">${escHtml(s.description || '')}</textarea>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function addSourceRow() {
+    formSources.push({ author: '', title: '', type: 'Étude', description: '', link: '' });
+    redrawSources();
+    // Scroll to new source
+    const cards = document.querySelectorAll('.source-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function removeSourceRow(i) {
+    formSources.splice(i, 1);
+    redrawSources();
+  }
+
+  function updateSource(i, field, value) {
+    formSources[i][field] = value;
+  }
+
+  /* ================================================
+     SAVE VIDEO
+  ================================================ */
+  async function saveVideo() {
+    if (!validateForm()) return;
+
+    const video = {
+      title:            document.getElementById('fTitle').value.trim(),
+      category:         document.getElementById('fCategory').value,
+      image:            document.getElementById('fImage').value.trim(),
+      shortDescription: document.getElementById('fDesc').value.trim(),
+      sources:          formSources.map(s => ({ ...s }))
+    };
+
+    if (editingIdx !== null) {
+      videos[editingIdx] = video;
+    } else {
+      videos.push(video);
+    }
+
+    await saveData();
+    toast(editingIdx !== null ? 'Vidéo mise à jour.' : 'Vidéo ajoutée.', 'success');
+    showView('list');
+  }
+
+  /* ================================================
+     DELETE VIDEO
+  ================================================ */
+  async function deleteVideo(i) {
+    const title = videos[i].title;
+    if (!confirm(`Supprimer "${title}" ? Cette action est irréversible.`)) return;
+    videos.splice(i, 1);
+    await saveData();
+    renderList();
+    toast('Vidéo supprimée.', 'success');
+  }
+
+  /* ================================================
+     VALIDATION
+  ================================================ */
+  function validateForm() {
+    clearValidation();
+    let valid = true;
+
+    if (!document.getElementById('fTitle').value.trim()) {
+      document.getElementById('fg-title').classList.add('has-error');
+      valid = false;
+    }
+    if (!document.getElementById('fCategory').value) {
+      document.getElementById('fg-category').classList.add('has-error');
+      valid = false;
+    }
+    if (!document.getElementById('fImage').value.trim()) {
+      document.getElementById('fg-image').classList.add('has-error');
+      valid = false;
+    }
+    if (!document.getElementById('fDesc').value.trim()) {
+      document.getElementById('fg-desc').classList.add('has-error');
+      valid = false;
+    }
+    if (!valid) toast('Remplis les champs obligatoires.', 'error');
+    return valid;
+  }
+
+  function clearValidation() {
+    ['fg-title','fg-category','fg-image','fg-desc'].forEach(id => {
+      document.getElementById(id)?.classList.remove('has-error');
+    });
+  }
+
+  /* ================================================
+     RESET
+  ================================================ */
+  async function confirmReset() {
+    if (!confirm('Réinitialiser la bibliothèque avec les données par défaut ? Toutes vos modifications seront perdues.')) return;
+    videos = JSON.parse(JSON.stringify(INITIAL_VIDEOS));
+    await saveData();
+    showView('list');
+    toast('Bibliothèque réinitialisée.', 'success');
+  }
+
+  /* ================================================
+     EXPORT
+  ================================================ */
+  function openExport() {
+    const code = 'const VIDEOS = ' + JSON.stringify(videos, null, 2) + ';';
+    document.getElementById('exportCode').textContent = code;
+    document.getElementById('exportOverlay').classList.add('open');
+  }
+
+  function closeExport(e) {
+    if (e && e.target !== document.getElementById('exportOverlay')) return;
+    document.getElementById('exportOverlay').classList.remove('open');
+  }
+
+  function copyCode() {
+    const code = document.getElementById('exportCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      toast('Code copié dans le presse-papiers !', 'success');
+    }).catch(() => {
+      toast('Impossible de copier automatiquement.', 'error');
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('exportOverlay').classList.remove('open');
+  });
+
+  /* ================================================
+     TOAST
+  ================================================ */
+  let toastTimer;
+  function toast(message, type = '') {
+    const el = document.getElementById('toast');
+    const icon = type === 'success'
+      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+      : type === 'error'
+      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+      : '';
+    el.innerHTML = icon + message;
+    el.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = 'toast'; }, 3000);
+  }
+
+  /* ================================================
+     HELPERS
+  ================================================ */
+  function escHtml(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ================================================
+     START
+  ================================================ */
+  init();
+</script>
+</body>
+</html>
