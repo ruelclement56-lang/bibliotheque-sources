@@ -48,5 +48,48 @@
         "link": "https://doi.org/10.1037/0022-3514.78.2.211"
       }
     ]
+  },
+  {
+    "title": "Le capitalisme de surveillance",
+    "category": "Business",
+    "image": "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&auto=format&fit=crop&q=80",
+    "shortDescription": "Pokémon Go, Tesla, reCAPTCHA : tu travailles gratuitement pour des entreprises valorisées à des milliards. L'expérience humaine comme matière première — c'est le capitalisme de surveillance.",
+    "sources": [
+      {
+        "author": "Shoshana Zuboff — Harvard Business School",
+        "title": "The Age of Surveillance Capitalism",
+        "type": "Livre",
+        "description": "La philosophe de Harvard définit le capitalisme de surveillance : l'expérience humaine extraite comme matière première gratuite, transformée en données comportementales prédictives et vendue aux annonceurs. Fondement théorique du concept central de la vidéo.",
+        "link": "https://www.hbs.edu/faculty/Pages/item.aspx?num=56791"
+      },
+      {
+        "author": "Luis von Ahn, Maurer, McMillen, Abraham & Blum — Carnegie Mellon",
+        "title": "reCAPTCHA: Human-Based Character Recognition via Web Security Measures",
+        "type": "Étude",
+        "description": "Publiée dans Science (2008), cette étude révèle comment reCAPTCHA transforme 200 millions de résolutions humaines par jour en travail non-rémunéré. Ce mécanisme a ensuite entraîné les systèmes de vision de Waymo, valorisé 45 milliards.",
+        "link": "https://www.science.org/doi/10.1126/science.1160379"
+      },
+      {
+        "author": "Nick Couldry & Ulises A. Mejias — LSE / SUNY",
+        "title": "Data Colonialism: Rethinking Big Data's Relation to the Contemporary Subject",
+        "type": "Article",
+        "description": "Television & New Media, 2019. Les chercheurs parallélisent l'extraction de données avec le colonialisme historique : les entreprises tech s'approprient les relations sociales humaines pour les convertir en capital, sans aucune compensation.",
+        "link": "https://journals.sagepub.com/doi/10.1177/1527476418796632"
+      },
+      {
+        "author": "Niantic Spatial — Popular Science",
+        "title": "Pokémon Go : 30 milliards d'images pour entraîner des robots de livraison",
+        "type": "Rapport",
+        "description": "500 millions de joueurs ont involontairement alimenté une base de 30 milliards d'images géolocalisées. Ce dataset, collecté gratuitement via le jeu, entraîne aujourd'hui les robots de livraison Coco Robotics dans les grandes villes mondiales.",
+        "link": "https://www.popsci.com/technology/pokemon-go-delivery-robots-crowdsourcing/"
+      },
+      {
+        "author": "Andrej Karpathy — Director of AI, Tesla",
+        "title": "Tesla Autopilot : fleet learning & entraînement par la flotte",
+        "type": "Conférence",
+        "description": "L'ex-directeur IA de Tesla explique comment 4 millions de véhicules équipés de 8 caméras génèrent en continu des données d'entraînement. Chaque trajet client améliore l'IA de conduite autonome — sans compensation pour les conducteurs.",
+        "link": "https://cleantechnica.com/2019/12/05/teslas-andrej-karpathy-talks-autopilot-video/"
+      }
+    ]
   }
 ]
