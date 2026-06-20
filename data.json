@@ -50,6 +50,49 @@
     ]
   },
   {
+    "title": "L'Effet Tetris",
+    "category": "Psychologie",
+    "image": "https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?w=800&auto=format&fit=crop&q=80",
+    "shortDescription": "Des amnésiques qui rêvent de Tetris sans se souvenir d'avoir joué. Une étude Harvard qui révèle comment le cerveau encode des patterns en dehors de toute mémoire consciente — et pourquoi certains voient des opportunités partout.",
+    "sources": [
+      {
+        "author": "Stickgold, Malia, Maguire, Roddenberry & O'Connor — Harvard Medical School",
+        "title": "Replaying the game: hypnagogic images in normals and amnesics",
+        "type": "Étude",
+        "description": "Science, 2000. Des patients amnésiques incapables de former de nouveaux souvenirs rapportaient pourtant des images de Tetris à l'endormissement. Preuve que le cerveau encode des patterns moteurs et visuels en dehors de la mémoire déclarative consciente.",
+        "link": "https://pubmed.ncbi.nlm.nih.gov/11030656/"
+      },
+      {
+        "author": "Kellman & Garrigan — UCLA",
+        "title": "Perceptual Learning and Human Expertise",
+        "type": "Étude",
+        "description": "Physics of Life Reviews, 2009. L'apprentissage perceptuel reconfigure les circuits neuronaux pour reconnaître automatiquement des patterns complexes — c'est ce qui explique pourquoi les experts 'voient' instantanément ce que les novices ne perçoivent pas.",
+        "link": "https://pubmed.ncbi.nlm.nih.gov/31008452/"
+      },
+      {
+        "author": "Sanders, Chang, Bhatt & Bhatt — Journal of Neuroscience",
+        "title": "Selective Attention and Decision-Making Have Separable Neural Bases",
+        "type": "Étude",
+        "description": "Journal of Neuroscience, 2024. Le cerveau reçoit des millions d'informations par seconde mais n'en traite consciemment qu'une infime partie. Le filtre attentionnel sélectionne ce qui correspond aux patterns déjà appris — et ignore le reste.",
+        "link": "https://www.jneurosci.org/content/44/38/e0224242024"
+      },
+      {
+        "author": "Polat & Sagi",
+        "title": "Perceptual learning induces neuroplasticity, enabling improvement of visual functions",
+        "type": "Étude",
+        "description": "Expert Review of Ophthalmology, 2009. L'exposition répétée à un type d'information recâble physiquement le cerveau par plasticité synaptique. Ce à quoi tu t'exposes devient ce que tu perçois automatiquement — la base neurologique de l'Effet Tetris.",
+        "link": "https://www.tandfonline.com/doi/full/10.1586/eop.09.54"
+      },
+      {
+        "author": "Friedrich Nietzsche",
+        "title": "Nachlass — « Es gibt keine Tatsachen, nur Interpretationen »",
+        "type": "Philosophie",
+        "description": "1888. « Il n'y a pas de faits, rien que des interprétations. » Nietzsche anticipe ce que la neuroscience confirmera un siècle plus tard : la réalité perçue est une construction du cerveau, façonnée par ses expériences et expositions passées.",
+        "link": "https://plato.stanford.edu/entries/nietzsche/"
+      }
+    ]
+  },
+  {
     "title": "Le capitalisme de surveillance",
     "category": "Business",
     "image": "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&auto=format&fit=crop&q=80",
