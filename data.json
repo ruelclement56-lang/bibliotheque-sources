@@ -93,6 +93,42 @@
     ]
   },
   {
+    "title": "La Prophétie Autoréalisatrice",
+    "category": "Psychologie",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80",
+    "shortDescription": "Si tu crois que ça va échouer, tu vas inconsciemment t'arranger pour que ça échoue. Merton appelait ça la prophétie autoréalisatrice — et Bandura a montré que la self-efficacy est la clé pour en sortir.",
+    "sources": [
+      {
+        "author": "Robert K. Merton — Columbia University",
+        "title": "The Self-Fulfilling Prophecy",
+        "type": "Article",
+        "description": "The Antioch Review, 1948. Merton décrit comment une fausse croyance, une fois intégrée, engendre des comportements qui finissent par la rendre vraie. C'est exactement le mécanisme décrit dans la vidéo : croire que personne n'achètera te pousse à mal vendre, et le résultat confirme ta croyance de départ.",
+        "link": "https://www.jstor.org/stable/4609267"
+      },
+      {
+        "author": "Albert Bandura — Stanford University",
+        "title": "Self-efficacy: Toward a unifying theory of behavioral change",
+        "type": "Étude",
+        "description": "Psychological Review, 1977. Bandura établit que la croyance en sa propre capacité détermine si on initie un comportement, combien d'effort on y met, et combien de temps on tient face aux obstacles. Plus tu crois en toi, plus tu agis — et plus tu te crées des preuves concrètes.",
+        "link": "https://doi.org/10.1037/0033-295X.84.2.191"
+      },
+      {
+        "author": "Robert Rosenthal & Lenore Jacobson — Harvard University",
+        "title": "Pygmalion in the Classroom",
+        "type": "Étude",
+        "description": "The Urban Review, 1968. Des enseignants à qui on avait dit que certains élèves (choisis au hasard) allaient « exploser » ont inconsciemment modifié leur comportement — et ces élèves ont effectivement progressé davantage. La démonstration empirique directe que les attentes créent les résultats.",
+        "link": "https://link.springer.com/article/10.1007/BF02322211"
+      },
+      {
+        "author": "Albert Bandura — Stanford University",
+        "title": "Self-Efficacy: The Exercise of Control",
+        "type": "Livre",
+        "description": "W.H. Freeman & Company, 1997. L'œuvre de référence de Bandura sur la self-efficacy : comment la croyance en sa capacité à progresser influence chaque domaine de la vie — la persévérance, la gestion du stress, la performance. Le fondement académique du message central de la vidéo.",
+        "link": "https://archive.org/details/selfefficacyexer0000band"
+      }
+    ]
+  },
+  {
     "title": "Le capitalisme de surveillance",
     "category": "Business",
     "image": "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&auto=format&fit=crop&q=80",
